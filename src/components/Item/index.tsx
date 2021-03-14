@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,6 +9,8 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import apiFetch from "../../config/apiFetch";
+import { useCookies } from "react-cookie";
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,12 +39,27 @@ export interface ItemProps {
 
 const Item: FunctionComponent<ItemProps> = ({ item }) => {
   const classes = useStyles();
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [cookies, setCookie] = useCookies(["token"]);
+  let location = useLocation();
   const handleDeleteItem = (id: number) => {
     apiFetch
-      .delete(`/api/todos/${id}`)
-      .then((res) => res.status === 200 && console.log("done"))
+      .delete(`/api/todos/${id}`, {
+        headers: {
+          Accept: "*",
+
+          Authorization: cookies.token,
+        },
+      })
+      .then(() => setIsDeleted(true))
       .catch((err) => console.error(err));
   };
+
+  useEffect(() => {
+    if (isDeleted) {
+      window.location.reload();
+    }
+  }, [isDeleted]);
 
   return (
     <Card className={classes.root}>
