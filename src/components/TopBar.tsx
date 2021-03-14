@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import { AppBar, Typography, Button, Toolbar } from "@material-ui/core";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -23,20 +23,17 @@ const useStyles = makeStyles((theme: Theme) => ({
 const TopBar = () => {
   const classes = useStyles();
   const [isLoggedout, setLoggedout] = useState(false);
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
 
   const handleLogout = () => {
-    apiFetch
-      .post("/api/logout", {
-        headers: { Authorization: cookies.token },
-      })
-      .then(() => setLoggedout(true))
-      .catch((err) => console.log(err));
+    setLoggedout(true);
+    removeCookie("token");
   };
-
-  if (isLoggedout) {
-    <Redirect to="/" />;
-  }
+  useEffect(() => {
+    if (isLoggedout) {
+      <Redirect to="/" exact/>;
+    }
+  }, [isLoggedout]);
 
   return (
     <div className={classes.root}>
@@ -57,6 +54,8 @@ const TopBar = () => {
             color="inherit"
             endIcon={<ExitToAppIcon fontSize="inherit" />}
             onClick={handleLogout}
+            component={Link}
+            to="/"
           >
             Log out
           </Button>
@@ -65,4 +64,4 @@ const TopBar = () => {
     </div>
   );
 };
-export default TopBar
+export default TopBar;
