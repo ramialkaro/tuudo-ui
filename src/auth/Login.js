@@ -11,6 +11,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import apiFetch from '../config/apiFetch'
 import {Redirect} from 'react-router-dom'
+import { useCookies } from 'react-cookie';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,
@@ -20,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
  const Login = () => {
   const classes = useStyles();
+  const [cookies, setCookie] = useCookies(['token']);
   const [isLoggedIn, setLoggedIn] = useState(false)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -31,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
         rememberMe
       }).then(res => {
         if(res.status===200){
+         setCookie('token',`Bearer ${res.data.id_token}`)
           setLoggedIn(true)
         }
       }).catch(err=>{
@@ -39,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   }
 
   if(isLoggedIn){
-    return <Redirect to="/home"/>
+    return <Redirect to="/dashboard"/>
   }
 
   return (
