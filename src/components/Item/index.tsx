@@ -8,6 +8,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import apiFetch from "../../config/apiFetch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,26 +29,29 @@ export interface ItemProps {
   key: number;
   item: {
     title: string;
+    description: string;
+    status: any;
     id: number;
   };
-  remove: (id: number) => void;
 }
 
-const Item: FunctionComponent<ItemProps> = ({ item, remove }) => {
+const Item: FunctionComponent<ItemProps> = ({ item }) => {
   const classes = useStyles();
-
   const handleDeleteItem = (id: number) => {
-    remove(id);
+    apiFetch
+      .delete(`/api/todos/${id}`)
+      .then((res) => res.status === 200 && console.log("done"))
+      .catch((err) => console.error(err));
   };
 
   return (
     <Card className={classes.root}>
       <CardHeader title={item.title} className={classes.title} />
       <CardContent>
-        <Typography>
-          Diam sed ipsum invidunt lorem voluptua. Aliquyam magna aliquyam diam
-          eirmod, aliquyam eirmod elitr at consetetur consetetur no, no no.
+        <Typography color="secondary">
+          Status: {item.status.toLowerCase()}
         </Typography>
+        <Typography>{item.description}</Typography>
       </CardContent>
       <CardActions>
         <Button
