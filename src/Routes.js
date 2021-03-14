@@ -1,4 +1,4 @@
-import  Dashboard  from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -6,20 +6,31 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import Auth from '../src/auth/index'
-import Register from '../src/auth/Register'
+import Auth from "../src/auth/index";
+import Register from "../src/auth/Register";
+import { useCookies } from "react-cookie";
+
+const SecureRoute = ({ component: Component, ...rest }) => {
+  const [cookies, setCookie] = useCookies(["token"]);
+  return cookies.token ? (
+    <Route {...rest} component={Component} />
+  ) : (
+    <Redirect to="/" />
+  );
+};
 
 const Routes = () => {
-    
-    return (
-        <Router>
-            <Switch>
-                <Route path="/" exact component={Auth} />
-                <Route path="/dashboard"  component={Dashboard} />
-                <Route path="/register" component={Register} />
-            </Switch>
-        </Router>
-    )
-}
+  const [cookies, setCookie] = useCookies(["token"]);
 
-export default Routes
+  return (
+    <Router>
+      <Switch>
+        <Route path="/" exact component={Auth} />
+        <SecureRoute path="/dashboard" component={Dashboard} />
+        <Route path="/register" component={Register} />
+      </Switch>
+    </Router>
+  );
+};
+
+export default Routes;
