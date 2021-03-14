@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import TopBar from "../components/TopBar";
@@ -9,6 +9,8 @@ import Items from "../components/Items";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
+    backgroundColor:"gray",
+    height:"100vh"
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -22,7 +24,8 @@ const Dashboard = () => {
   const classes = useStyles();
   const [cookies, setCookie] = useCookies(["token"]);
   const [todos, setTodos] = useState([])
-
+useEffect(() => {
+ 
   apiFetch
     .get("/api/todos", {
       headers: { Authorization: cookies.token },
@@ -30,6 +33,7 @@ const Dashboard = () => {
     .then((res) => setTodos(res.data))
     .catch((err) => console.error(err));
 
+}, [])
 
   return (
     <div className={classes.root}>
